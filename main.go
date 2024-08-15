@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import (
+	commons "UserManagement/Commons"
+	"context"
+)
 
 func main() {
-	fmt.Println("This is Sample Project")
+	_, logger := commons.NewLoggerWithCorrelationid(context.Background(), "")
+	logger.Info("This is Sample Project")
 }
