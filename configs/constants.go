@@ -1,5 +1,10 @@
-package constants
+package configs
 
 const (
 	APP_NAME = "APP_NAME"
+
+	MONGO_URI      = "MONGO_URI"
+	MONGO_USER     = "MONGO_USER"
+	MONGO_PASSWORD = "MONGO_PASSWORD"
+	MONGO_DATABASE = "MONGO_DATABASE"
 )

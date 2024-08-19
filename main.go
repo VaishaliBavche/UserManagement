@@ -1,7 +1,7 @@
 package main
 
 import (
-	commons "UserManagement/Commons"
+	"UserManagement/commons"
 	"context"
 )
 

@@ -1,16 +1,18 @@
 package db
 
-import "UserManagement/commons"
+import (
+	"UserManagement/commons/appdb"
+)
 
 type udbservice struct {
-	ucollection commons.DatabaseCollection
+	ucollection appdb.DatabaseCollection
 }
 
 type DbService interface {
 	SaveUser() error
 }
 
-func NewUserDbService(dbclient commons.DatabaseClient) DbService {
+func NewUserDbService(dbclient appdb.DatabaseClient) DbService {
 	return &udbservice{
 		ucollection: dbclient.Collection("users"),
 	}

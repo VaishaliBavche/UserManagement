@@ -1,4 +1,4 @@
-package constants
+package configs
 
 import "context"
 
