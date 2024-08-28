@@ -5,8 +5,8 @@ import (
 	"os"
 	"time"
 
-	"UserManagement/commons"
-	"UserManagement/configs"
+	"UserManagement/commons/apploggers"
+	"UserManagement/commons/configs"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -30,7 +30,7 @@ func (d *dbfactory) NewDBConnection(context context.Context) (DatabaseClient, er
 
 // function to create a new connection, based on database name
 func (d *dbfactory) NewDbConnection(ctx context.Context, dbname string) (DatabaseClient, error) {
-	logger := commons.GetLoggerWithCorrelationid(ctx)
+	logger := apploggers.GetLoggerWithCorrelationid(ctx)
 	defer logger.Sync() //nolint
 
 	credentials := options.Credential{

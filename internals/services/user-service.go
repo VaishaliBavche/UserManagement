@@ -10,7 +10,7 @@ type eservice struct {
 	dbservice db.DbService
 }
 
-func NewUserService(dbservice db.DbService) EventService {
+func NewUserEventService(dbservice db.DbService) EventService {
 	return &eservice{
 		dbservice: dbservice,
 	}
