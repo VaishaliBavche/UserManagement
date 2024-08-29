@@ -27,6 +27,7 @@ func main() {
 	// user api Routes
 	userController := apis.NewUserController(dbservice, eventService)
 	e.GET("/users", userController.GetUsers)
+	e.GET("/users/:id", userController.GetUserById)
 	e.POST("/users", userController.CreateUser)
 
 	// Start server

@@ -10,6 +10,7 @@ import (
 )
 
 type EventService interface {
+	GetUserById(context context.Context, userId string) (*models.User, error)
 	GetUsers(context context.Context) ([]*models.User, error)
 	CreateUser(context context.Context, user *models.User) error
 }
@@ -23,6 +24,19 @@ func NewUserEventService(dbservice db.DbService) EventService {
 		dbservice: dbservice,
 	}
 }
+
+func (e *eservice) GetUserById(context context.Context, userId string) (*models.User, error) {
+	logger := apploggers.GetLoggerWithCorrelationid(context)
+	logger.Infof("Executing GetUserById, userId: %s", userId)
+	user, dberror := e.dbservice.GetUserById(context, userId)
+	if dberror != nil {
+		logger.Error(dberror)
+		return nil, dberror
+	}
+	logger.Infof("Executed GetUserById, userId: %s", userId)
+	return user, nil
+}
+
 func (e *eservice) GetUsers(context context.Context) ([]*models.User, error) {
 	logger := apploggers.GetLoggerWithCorrelationid(context)
 	logger.Infof("Executing GetUsers...")
@@ -45,11 +59,11 @@ func (e *eservice) CreateUser(context context.Context, user *models.User) error 
 		logger.Error(uerror.Error())
 		return uerror
 	}
-	id, dberror := e.dbservice.SaveUser(context, userSchema)
+	userId, dberror := e.dbservice.SaveUser(context, userSchema)
 	if dberror != nil {
 		logger.Error(dberror)
 		return dberror
 	}
-	logger.Infof("Executed CreateUser, userid: %v", id)
+	logger.Infof("Executed CreateUser, userId: %v", userId)
 	return nil
 }

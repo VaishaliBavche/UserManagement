@@ -24,6 +24,19 @@ func NewUserController(dbservice db.DbService, eservice services.EventService) u
 	}
 }
 
+func (u *ucontroller) GetUserById(c echo.Context) error {
+	lcontext, logger := apploggers.GetLoggerFromEcho(c)
+	userId := c.Param("id")
+	logger.Infof("Executing GetUserById, userId: %s", userId)
+	user, eerror := u.eservice.GetUserById(lcontext, userId)
+	if eerror != nil {
+		logger.Error(eerror)
+		return eerror
+	}
+	logger.Infof("Executed GetUserById, id:%s, user %s", userId, commons.PrintStruct(user))
+	return c.JSON(http.StatusOK, user)
+}
+
 func (u *ucontroller) GetUsers(c echo.Context) error {
 	lcontext, logger := apploggers.GetLoggerFromEcho(c)
 	logger.Info("Executing Get All Users")
