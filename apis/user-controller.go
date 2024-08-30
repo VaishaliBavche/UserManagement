@@ -24,6 +24,15 @@ func NewUserController(dbservice db.DbService, eservice services.EventService) u
 	}
 }
 
+// @Tags User Management
+// @Summary GetUserById
+// @Description Gets user details by user id such as name, email, status etc.
+// @Accept json
+// @Produce json
+// @Param id path string true "User id"
+// @Success 200 {object} models.User
+// @Failure 400 {object} commons.ApiErrorResponsePayload
+// @Router /users/{id} [Get]
 func (u *ucontroller) GetUserById(c echo.Context) error {
 	lcontext, logger := apploggers.GetLoggerFromEcho(c)
 	userId := c.Param("id")
@@ -37,6 +46,15 @@ func (u *ucontroller) GetUserById(c echo.Context) error {
 	return c.JSON(http.StatusOK, user)
 }
 
+// @Tags User Management
+// @Summary DeleteUserById
+// @Description delete user details by user id
+// @Accept json
+// @Produce json
+// @Param id path string true "User id"
+// @Success 204
+// @Failure 400 {object} commons.ApiErrorResponsePayload
+// @Router /users/{id} [Delete]
 func (u *ucontroller) DeleteUserById(c echo.Context) error {
 	lcontext, logger := apploggers.GetLoggerFromEcho(c)
 	userId := c.Param("id")
@@ -50,6 +68,15 @@ func (u *ucontroller) DeleteUserById(c echo.Context) error {
 	return c.NoContent(http.StatusNoContent)
 }
 
+// @Tags User Management
+// @Summary GetUsers
+// @Description get details of all users
+// @Accept json
+// @Produce json
+// @Param id path string true "User id"
+// @Success 200 {object} []models.User
+// @Failure 400 {object} commons.ApiErrorResponsePayload
+// @Router /users [Get]
 func (u *ucontroller) GetUsers(c echo.Context) error {
 	lcontext, logger := apploggers.GetLoggerFromEcho(c)
 	logger.Info("Executing Get All Users")
@@ -65,6 +92,15 @@ func (u *ucontroller) GetUsers(c echo.Context) error {
 	})
 }
 
+// @Tags User Management
+// @Summary CreateUser
+// @Description Create a user with name, email, age, and is_Active status
+// @Accept json
+// @Produce json
+// @Param user body models.User true "User data"
+// @Success 201 {object} map[string]interface{}
+// @Failure 400 {object} commons.ApiErrorResponsePayload
+// @Router /users [post]
 func (u *ucontroller) CreateUser(c echo.Context) error {
 	lcontext, logger := apploggers.GetLoggerFromEcho(c)
 	logger.Info("Executing CreateUser")
