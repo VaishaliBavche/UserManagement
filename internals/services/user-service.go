@@ -11,8 +11,9 @@ import (
 
 type EventService interface {
 	GetUserById(context context.Context, userId string) (*models.User, error)
+	DeleteUserById(context context.Context, userId string) error
 	GetUsers(context context.Context) ([]*models.User, error)
-	CreateUser(context context.Context, user *models.User) error
+	CreateUser(context context.Context, user *models.User) (string, error)
 }
 
 type eservice struct {
@@ -37,6 +38,18 @@ func (e *eservice) GetUserById(context context.Context, userId string) (*models.
 	return user, nil
 }
 
+func (e *eservice) DeleteUserById(context context.Context, userId string) error {
+	logger := apploggers.GetLoggerWithCorrelationid(context)
+	logger.Infof("Executing DeleteUserById, userId: %s", userId)
+	dberror := e.dbservice.DeleteUserById(context, userId)
+	if dberror != nil {
+		logger.Error(dberror)
+		return dberror
+	}
+	logger.Infof("Executed DeleteUserById, userId: %s", userId)
+	return nil
+}
+
 func (e *eservice) GetUsers(context context.Context) ([]*models.User, error) {
 	logger := apploggers.GetLoggerWithCorrelationid(context)
 	logger.Infof("Executing GetUsers...")
@@ -49,7 +62,7 @@ func (e *eservice) GetUsers(context context.Context) ([]*models.User, error) {
 	return users, nil
 }
 
-func (e *eservice) CreateUser(context context.Context, user *models.User) error {
+func (e *eservice) CreateUser(context context.Context, user *models.User) (string, error) {
 	logger := apploggers.GetLoggerWithCorrelationid(context)
 	logger.Infof("Executing CreateUser...")
 	var userSchema *dbmodel.UserSchema
@@ -57,13 +70,13 @@ func (e *eservice) CreateUser(context context.Context, user *models.User) error 
 	uerror := json.Unmarshal(pbyes, &userSchema)
 	if uerror != nil {
 		logger.Error(uerror.Error())
-		return uerror
+		return "", uerror
 	}
 	userId, dberror := e.dbservice.SaveUser(context, userSchema)
 	if dberror != nil {
 		logger.Error(dberror)
-		return dberror
+		return "", dberror
 	}
 	logger.Infof("Executed CreateUser, userId: %v", userId)
-	return nil
+	return userId, nil
 }

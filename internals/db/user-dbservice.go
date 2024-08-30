@@ -21,6 +21,7 @@ type udbservice struct {
 
 type DbService interface {
 	GetUserById(ctx context.Context, id string) (*models.User, error)
+	DeleteUserById(ctx context.Context, id string) error
 	GetUsers(ctx context.Context) ([]*models.User, error)
 	SaveUser(ctx context.Context, user *dbmodel.UserSchema) (string, error)
 }
@@ -34,10 +35,10 @@ func NewUserDbService(dbclient appdb.DatabaseClient) DbService {
 func (u *udbservice) GetUserById(ctx context.Context, userId string) (*models.User, error) {
 	logger := apploggers.GetLoggerWithCorrelationid(ctx)
 	logger.Infof("Executing GetUserById, Id: %s", userId)
-	// get object if=d from userid string
+	// get object id from userid string
 	id, err := primitive.ObjectIDFromHex(userId)
 	if err != nil {
-		return nil, fmt.Errorf("invalid userId provided, userId: %s", userId)
+		return nil, fmt.Errorf("invalid userid provided, userId: %s", userId)
 	}
 	var user *models.User
 	var filter = bson.M{"_id": id}
@@ -48,6 +49,24 @@ func (u *udbservice) GetUserById(ctx context.Context, userId string) (*models.Us
 	}
 	logger.Infof("Executed GetUserById, user: %s", commons.PrintStruct(user))
 	return user, nil
+}
+
+func (u *udbservice) DeleteUserById(ctx context.Context, userId string) error {
+	logger := apploggers.GetLoggerWithCorrelationid(ctx)
+	logger.Infof("Executing DeleteUserById, Id: %s", userId)
+	// get object id from userid string
+	id, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		return fmt.Errorf("cannot delete user, invalid userid provided, userId: %s", userId)
+	}
+	var filter = bson.M{"_id": id}
+	_, dbError := u.ucollection.DeleteOne(ctx, filter)
+	if dbError != nil {
+		logger.Error(dbError)
+		return dbError
+	}
+	logger.Infof("Executed DeleteUserById, Id: %s", userId)
+	return nil
 }
 
 func (u *udbservice) GetUsers(ctx context.Context) ([]*models.User, error) {

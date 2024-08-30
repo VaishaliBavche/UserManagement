@@ -28,6 +28,7 @@ func main() {
 	userController := apis.NewUserController(dbservice, eventService)
 	e.GET("/users", userController.GetUsers)
 	e.GET("/users/:id", userController.GetUserById)
+	e.DELETE("/users/:id", userController.DeleteUserById)
 	e.POST("/users", userController.CreateUser)
 
 	// Start server

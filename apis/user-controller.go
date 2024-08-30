@@ -7,8 +7,8 @@ import (
 	"UserManagement/internals/models"
 	"UserManagement/internals/services"
 	"net/http"
+	"strings"
 
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -28,22 +28,35 @@ func (u *ucontroller) GetUserById(c echo.Context) error {
 	lcontext, logger := apploggers.GetLoggerFromEcho(c)
 	userId := c.Param("id")
 	logger.Infof("Executing GetUserById, userId: %s", userId)
-	user, eerror := u.eservice.GetUserById(lcontext, userId)
-	if eerror != nil {
-		logger.Error(eerror)
-		return eerror
+	user, serror := u.eservice.GetUserById(lcontext, userId)
+	if serror != nil {
+		logger.Error(serror)
+		return c.JSON(http.StatusBadRequest, commons.ApiErrorResponse(serror.Error(), nil))
 	}
-	logger.Infof("Executed GetUserById, id:%s, user %s", userId, commons.PrintStruct(user))
+	logger.Infof("Executed GetUserById, userId:%s, user %s", userId, commons.PrintStruct(user))
 	return c.JSON(http.StatusOK, user)
+}
+
+func (u *ucontroller) DeleteUserById(c echo.Context) error {
+	lcontext, logger := apploggers.GetLoggerFromEcho(c)
+	userId := c.Param("id")
+	logger.Infof("Executing DeleteUserById, userId: %s", userId)
+	serror := u.eservice.DeleteUserById(lcontext, userId)
+	if serror != nil {
+		logger.Error(serror)
+		return c.JSON(http.StatusBadRequest, commons.ApiErrorResponse(serror.Error(), nil))
+	}
+	logger.Infof("Executed DeleteUserById, userId: %s", userId)
+	return c.NoContent(http.StatusNoContent)
 }
 
 func (u *ucontroller) GetUsers(c echo.Context) error {
 	lcontext, logger := apploggers.GetLoggerFromEcho(c)
 	logger.Info("Executing Get All Users")
-	users, eerror := u.eservice.GetUsers(lcontext)
-	if eerror != nil {
-		logger.Error(eerror)
-		return eerror
+	users, serror := u.eservice.GetUsers(lcontext)
+	if serror != nil {
+		logger.Error(serror)
+		return c.JSON(http.StatusBadRequest, commons.ApiErrorResponse(serror.Error(), nil))
 	}
 	logger.Infof("Executed GetUsers, users %s", commons.PrintStruct(users))
 	return c.JSON(http.StatusOK, map[string]interface{}{
@@ -55,17 +68,29 @@ func (u *ucontroller) GetUsers(c echo.Context) error {
 func (u *ucontroller) CreateUser(c echo.Context) error {
 	lcontext, logger := apploggers.GetLoggerFromEcho(c)
 	logger.Info("Executing CreateUser")
-	name := "test_user" + uuid.New().String()
-	serror := u.eservice.CreateUser(lcontext, &models.User{
-		Name:     name,
-		Type:     "Customer",
-		Email:    name + "@gmail.com",
-		IsActive: false,
-	})
+	var user *models.User
+	err := c.Bind(&user)
+	if err != nil || user == nil {
+		logger.Error("invalid request payload")
+		return c.JSON(http.StatusBadRequest, commons.ApiErrorResponse("invalid request payload", nil))
+	}
+
+	if len(strings.TrimSpace(user.Name)) == 0 {
+		logger.Error("'name' is required")
+		return c.JSON(http.StatusBadRequest, commons.ApiErrorResponse("'name' is required", nil))
+	}
+
+	if len(strings.TrimSpace(user.Email)) == 0 {
+		logger.Error("'email' is required")
+		return c.JSON(http.StatusBadRequest, commons.ApiErrorResponse("'email' is required", nil))
+	}
+	Id, serror := u.eservice.CreateUser(lcontext, user)
 	if serror != nil {
 		logger.Error(serror)
-		return serror
+		return c.JSON(http.StatusBadRequest, commons.ApiErrorResponse(serror.Error(), nil))
 	}
 	logger.Info("Executed CreateUser")
-	return c.NoContent(http.StatusCreated)
+	return c.JSON(http.StatusCreated, map[string]string{
+		"id": Id,
+	})
 }
