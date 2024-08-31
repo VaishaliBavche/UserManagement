@@ -24,6 +24,7 @@ type DbService interface {
 	DeleteUserById(ctx context.Context, id string) error
 	GetUsers(ctx context.Context) ([]*models.User, error)
 	SaveUser(ctx context.Context, user *dbmodel.UserSchema) (string, error)
+	UpdateUser(ctx context.Context, user *dbmodel.UserSchema, userId string) error
 }
 
 func NewUserDbService(dbclient appdb.DatabaseClient) DbService {
@@ -100,4 +101,25 @@ func (u *udbservice) SaveUser(ctx context.Context, user *dbmodel.UserSchema) (st
 	id := result.InsertedID.(primitive.ObjectID).Hex()
 	logger.Infof("Executed SaveUser, userid: %s", commons.PrintStruct(user))
 	return id, nil
+}
+
+func (u *udbservice) UpdateUser(ctx context.Context, user *dbmodel.UserSchema, userId string) error {
+	logger := apploggers.GetLoggerWithCorrelationid(ctx)
+	logger.Infof("Executing UpdateUser...")
+	// get object id from userid string
+	id, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		return fmt.Errorf("cannot delete user, invalid userid provided, userId: %s", userId)
+	}
+	var filter = bson.M{"_id": id}
+	update := bson.M{"$set": user} // Correct update document
+	// update user in db
+	_, dbError := u.ucollection.UpdateOne(ctx, filter, update)
+	if dbError != nil {
+		logger.Error(dbError)
+		return dbError
+	}
+
+	logger.Infof("Executed UpdateUser, userid: %s", commons.PrintStruct(user))
+	return nil
 }

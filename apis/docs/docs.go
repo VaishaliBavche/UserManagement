@@ -31,15 +31,6 @@ const docTemplate = `{
                     "User Management"
                 ],
                 "summary": "GetUsers",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -73,7 +64,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "User data",
-                        "name": "user",
+                        "name": "payload",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -159,6 +150,48 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/commons.ApiErrorResponsePayload"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "update user details such as name, email, age, and is_Active status bu user id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Management"
+                ],
+                "summary": "UpdateUser",
+                "parameters": [
+                    {
+                        "description": "User data",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "User Id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
                     },
                     "400": {
                         "description": "Bad Request",

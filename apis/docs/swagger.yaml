@@ -38,12 +38,6 @@ paths:
       consumes:
       - application/json
       description: get details of all users
-      parameters:
-      - description: User id
-        in: path
-        name: id
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -67,7 +61,7 @@ paths:
       parameters:
       - description: User data
         in: body
-        name: user
+        name: payload
         required: true
         schema:
           $ref: '#/definitions/models.User'
@@ -131,6 +125,35 @@ paths:
           schema:
             $ref: '#/definitions/commons.ApiErrorResponsePayload'
       summary: GetUserById
+      tags:
+      - User Management
+    patch:
+      consumes:
+      - application/json
+      description: update user details such as name, email, age, and is_Active status
+        bu user id
+      parameters:
+      - description: User data
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      - description: User Id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/commons.ApiErrorResponsePayload'
+      summary: UpdateUser
       tags:
       - User Management
 swagger: "2.0"

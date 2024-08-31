@@ -39,6 +39,7 @@ func main() {
 	e.GET("/users/:id", userController.GetUserById)
 	e.DELETE("/users/:id", userController.DeleteUserById)
 	e.POST("/users", userController.CreateUser)
+	e.PATCH("/users/:id", userController.UpdateUser)
 
 	// Swagger UI route
 	e.GET("/swagger/*", echoSwagger.WrapHandler)

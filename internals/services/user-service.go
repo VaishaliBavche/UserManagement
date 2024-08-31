@@ -14,6 +14,7 @@ type EventService interface {
 	DeleteUserById(context context.Context, userId string) error
 	GetUsers(context context.Context) ([]*models.User, error)
 	CreateUser(context context.Context, user *models.User) (string, error)
+	UpdateUser(context context.Context, user *models.User, userId string) error
 }
 
 type eservice struct {
@@ -79,4 +80,23 @@ func (e *eservice) CreateUser(context context.Context, user *models.User) (strin
 	}
 	logger.Infof("Executed CreateUser, userId: %v", userId)
 	return userId, nil
+}
+
+func (e *eservice) UpdateUser(context context.Context, user *models.User, userId string) error {
+	logger := apploggers.GetLoggerWithCorrelationid(context)
+	logger.Infof("Executing UpdateUser...")
+	var userSchema *dbmodel.UserSchema
+	pbyes, _ := json.Marshal(user)
+	uerror := json.Unmarshal(pbyes, &userSchema)
+	if uerror != nil {
+		logger.Error(uerror.Error())
+		return uerror
+	}
+	dberror := e.dbservice.UpdateUser(context, userSchema, userId)
+	if dberror != nil {
+		logger.Error(dberror)
+		return dberror
+	}
+	logger.Infof("Executed UpdateUser, userId: %v", userId)
+	return nil
 }
