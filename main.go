@@ -34,7 +34,7 @@ func main() {
 	e := echo.New()
 
 	// user api Routes
-	userController := apis.NewUserController(dbservice, eventService)
+	userController := apis.NewUserController(eventService)
 	e.GET("/users", userController.GetUsers)
 	e.GET("/users/:id", userController.GetUserById)
 	e.DELETE("/users/:id", userController.DeleteUserById)

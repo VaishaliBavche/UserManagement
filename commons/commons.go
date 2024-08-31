@@ -6,7 +6,7 @@ import (
 
 type ApiErrorResponsePayload struct {
 	Status         string                 `json:"status"`
-	Message        string                 `json:"error"`
+	Message        string                 `json:"message"`
 	AdditionalInfo map[string]interface{} `json:"additional_info,omitempty"`
 }
 

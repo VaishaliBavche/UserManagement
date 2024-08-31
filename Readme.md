@@ -103,7 +103,7 @@ Payload
     "type": "string"
 }
 ```
-
+update the user details by provided id and payload.
 
 
 
@@ -123,4 +123,4 @@ Golang, Mongodb, Swagger Apis, Echo Framework etc.
 ## Support
 
 For support, email us.
-- [Vaishali Bavche](vbavche71198@gmail.com )
+- [Vaishali Bavche](mailto:vbavche71198@gmail.com )

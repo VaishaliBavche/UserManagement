@@ -3,7 +3,6 @@ package apis
 import (
 	"UserManagement/commons"
 	"UserManagement/commons/apploggers"
-	"UserManagement/internals/db"
 	"UserManagement/internals/models"
 	"UserManagement/internals/services"
 	"net/http"
@@ -13,14 +12,12 @@ import (
 )
 
 type ucontroller struct {
-	dbservice db.DbService
-	eservice  services.EventService
+	eservice services.EventService
 }
 
-func NewUserController(dbservice db.DbService, eservice services.EventService) ucontroller {
+func NewUserController(eservice services.EventService) ucontroller {
 	return ucontroller{
-		dbservice: dbservice,
-		eservice:  eservice,
+		eservice: eservice,
 	}
 }
 
@@ -37,6 +34,10 @@ func (u *ucontroller) GetUserById(c echo.Context) error {
 	lcontext, logger := apploggers.GetLoggerFromEcho(c)
 	userId := c.Param("id")
 	logger.Infof("Executing GetUserById, userId: %s", userId)
+	if len(strings.TrimSpace(userId)) == 0 {
+		logger.Error("'id' is required")
+		return c.JSON(http.StatusBadRequest, commons.ApiErrorResponse("'id' is required", nil))
+	}
 	user, serror := u.eservice.GetUserById(lcontext, userId)
 	if serror != nil {
 		logger.Error(serror)
@@ -59,6 +60,10 @@ func (u *ucontroller) DeleteUserById(c echo.Context) error {
 	lcontext, logger := apploggers.GetLoggerFromEcho(c)
 	userId := c.Param("id")
 	logger.Infof("Executing DeleteUserById, userId: %s", userId)
+	if len(strings.TrimSpace(userId)) == 0 {
+		logger.Error("'id' is required")
+		return c.JSON(http.StatusBadRequest, commons.ApiErrorResponse("'id' is required", nil))
+	}
 	serror := u.eservice.DeleteUserById(lcontext, userId)
 	if serror != nil {
 		logger.Error(serror)
