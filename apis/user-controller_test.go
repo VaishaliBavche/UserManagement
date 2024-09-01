@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
-	"testing"
 
 	"github.com/labstack/echo/v4"
 	. "github.com/onsi/ginkgo/v2"
@@ -19,11 +18,6 @@ import (
 	"UserManagement/internals/models"
 	"UserManagement/internals/services"
 )
-
-func TestApiController(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "API Controller Suite")
-}
 
 var _ = Describe("User API Controller", func() {
 
@@ -79,7 +73,7 @@ var _ = Describe("User API Controller", func() {
 			eservice := services.MockEventService{
 				FakeGetUserById: func(context context.Context, userId string) (*models.User, error) {
 					return &models.User{
-						Name:     "Abc",
+						Name:     "John",
 						Email:    "testuser@test.com",
 						Age:      27,
 						IsActive: true,
@@ -103,7 +97,7 @@ var _ = Describe("User API Controller", func() {
 			var response *models.User
 			uerror := json.Unmarshal(rec.Body.Bytes(), &response)
 			Expect(uerror).NotTo(HaveOccurred())
-			Expect(response.Name).To(Equal("Abc"))
+			Expect(response.Name).To(Equal("John"))
 			Expect(response.Email).To(Equal("testuser@test.com"))
 		})
 	})
@@ -209,7 +203,7 @@ var _ = Describe("User API Controller", func() {
 					return []*models.User{
 						{
 							Id:       id,
-							Name:     "Abc",
+							Name:     "John",
 							Email:    "testuser@test.com",
 							Age:      27,
 							IsActive: true,
@@ -241,7 +235,7 @@ var _ = Describe("User API Controller", func() {
 			uerror = json.Unmarshal(pbytes, &users)
 			Expect(uerror).NotTo(HaveOccurred())
 			Expect(len(users)).To(Equal(1))
-			Expect(users[0].Name).To(Equal("Abc"))
+			Expect(users[0].Name).To(Equal("John"))
 			Expect(users[0].Email).To(Equal("testuser@test.com"))
 		})
 	})
@@ -338,7 +332,7 @@ var _ = Describe("User API Controller", func() {
 				},
 			}
 			pbytes, merr := json.Marshal(&models.User{
-				Name:     "Abc",
+				Name:     "John",
 				Email:    "",
 				Age:      27,
 				IsActive: true,
@@ -373,7 +367,7 @@ var _ = Describe("User API Controller", func() {
 				},
 			}
 			pbytes, merr := json.Marshal(&models.User{
-				Name:     "Abc",
+				Name:     "John",
 				Email:    "testuser@test.com",
 				Age:      27,
 				IsActive: true,
@@ -408,7 +402,7 @@ var _ = Describe("User API Controller", func() {
 				},
 			}
 			pbytes, merr := json.Marshal(&models.User{
-				Name:     "Abc",
+				Name:     "John",
 				Email:    "testuser@test.com",
 				Age:      27,
 				IsActive: true,
@@ -555,7 +549,7 @@ var _ = Describe("User API Controller", func() {
 				},
 			}
 			user := &models.User{
-				Name:     "Abc",
+				Name:     "John",
 				Email:    "",
 				Age:      27,
 				IsActive: true,
@@ -592,7 +586,7 @@ var _ = Describe("User API Controller", func() {
 				},
 			}
 			user := &models.User{
-				Name:     "Abc",
+				Name:     "John",
 				Email:    "testuser@test.com",
 				Age:      27,
 				IsActive: true,
@@ -629,7 +623,7 @@ var _ = Describe("User API Controller", func() {
 				},
 			}
 			user := &models.User{
-				Name:     "Abc",
+				Name:     "John",
 				Email:    "testuser@test.com",
 				Age:      27,
 				IsActive: true,
